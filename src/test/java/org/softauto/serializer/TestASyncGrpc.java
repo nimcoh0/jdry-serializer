@@ -1,11 +1,12 @@
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.softauto.grpc.kryo.KryoSerialization;
-import org.softauto.grpc.service.SerializerService;
+import org.softauto.serializer.kryo.KryoSerialization;
+import org.softauto.serializer.service.Message;
+import org.softauto.serializer.service.SerializerService;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -14,17 +15,19 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
 
-public class TestSyncGrpc {
+public class TestASyncGrpc {
 
     int port ;
+    CountDownLatch lock = null;
 
 
     @Before
     public void setUp() throws IOException {
         SerializerServiceImpl impl = new SerializerServiceImpl(){
             @Override
-            public Object execute(String descriptor, Object[] request) throws Exception {
-                return "ok";
+            public Object execute(Message msg) throws Exception {
+                   lock.countDown();
+                   return "ok";
 
             }
         };
@@ -41,13 +44,17 @@ public class TestSyncGrpc {
         port = server.getPort();
     }
 
-    @Test
-    public void testSync() throws Exception {
-        Serializer serializer = new Serializer().setHost("localhost").setPort(port);
-        String result = serializer.write("test",new Object[]{TestClass.class});
-        assertTrue(result.equals("ok"));
-    }
 
+    @Test
+    public void testAsync() throws Exception {
+        lock = new CountDownLatch(1);
+        Serializer serializer = new Serializer().setHost("localhost").setPort(port);
+        CallFuture<String> future = new CallFuture<>();
+        Message msg = Message.newBuilder().setDescriptor("test").setArgs(new Object[]{TestClass.class}).build();
+        serializer.write(msg,future);
+        lock.await(1, TimeUnit.MINUTES);
+        assertTrue(future.get().equals("ok"));
+    }
 
 
     private class TestClass  {

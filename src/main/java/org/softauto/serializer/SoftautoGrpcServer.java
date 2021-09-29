@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 
 import io.grpc.MethodDescriptor;
@@ -24,7 +24,7 @@ import io.grpc.ServerServiceDefinition;
 import io.grpc.stub.ServerCalls;
 import io.grpc.stub.StreamObserver;
 import org.apache.avro.Protocol;
-import org.softauto.grpc.kryo.KryoSerialization;
+import org.softauto.serializer.kryo.KryoSerialization;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

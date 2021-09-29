@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 import io.grpc.MethodDescriptor;
 import org.apache.avro.Protocol;
-import org.softauto.grpc.kryo.KryoSerialization;
+import org.softauto.serializer.kryo.KryoSerialization;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;

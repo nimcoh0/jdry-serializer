@@ -1,4 +1,4 @@
-package org.softauto.grpc.kryo;
+package org.softauto.serializer.kryo;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -13,7 +13,7 @@ import de.javakaffee.kryoserializers.jodatime.JodaLocalDateTimeSerializer;
 import de.javakaffee.kryoserializers.jodatime.JodaLocalTimeSerializer;
 import org.joda.time.DateTime;
 import org.objenesis.strategy.StdInstantiatorStrategy;
-import org.softauto.grpc.ISerialization;
+import org.softauto.serializer.ISerialization;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

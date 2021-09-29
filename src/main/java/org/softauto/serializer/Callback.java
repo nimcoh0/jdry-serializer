@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 /**
  * Interface for receiving asynchronous callbacks. For each request with an

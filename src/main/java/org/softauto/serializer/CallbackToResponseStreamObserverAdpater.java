@@ -1,4 +1,4 @@
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 import io.grpc.ManagedChannel;
 import io.grpc.stub.StreamObserver;

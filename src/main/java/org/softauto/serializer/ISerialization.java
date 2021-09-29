@@ -1,4 +1,4 @@
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 public interface ISerialization {
 

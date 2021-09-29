@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;

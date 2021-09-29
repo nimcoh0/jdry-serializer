@@ -1,32 +1,29 @@
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.softauto.grpc.kryo.KryoSerialization;
-import org.softauto.grpc.service.SerializerService;
+import org.softauto.serializer.kryo.KryoSerialization;
+import org.softauto.serializer.service.Message;
+import org.softauto.serializer.service.SerializerService;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
 
-public class TestASyncGrpc {
+public class TestSyncGrpc {
 
     int port ;
-    CountDownLatch lock = null;
 
 
     @Before
     public void setUp() throws IOException {
         SerializerServiceImpl impl = new SerializerServiceImpl(){
             @Override
-            public Object execute(String descriptor, Object[] request) throws Exception {
-                   lock.countDown();
-                   return "ok";
+            public Object execute(Message msg) throws Exception {
+                return "ok";
 
             }
         };
@@ -43,16 +40,14 @@ public class TestASyncGrpc {
         port = server.getPort();
     }
 
-
     @Test
-    public void testAsync() throws Exception {
-        lock = new CountDownLatch(1);
+    public void testSync() throws Exception {
         Serializer serializer = new Serializer().setHost("localhost").setPort(port);
-        CallFuture<String> future = new CallFuture<>();
-        serializer.write("test",new Object[]{TestClass.class},future);
-        lock.await(1, TimeUnit.MINUTES);
-        assertTrue(future.get().equals("ok"));
+        Message msg = Message.newBuilder().setDescriptor("test").setArgs(new Object[]{TestClass.class}).build();
+        String result =  serializer.write(msg);
+        assertTrue(result.equals("ok"));
     }
+
 
 
     private class TestClass  {

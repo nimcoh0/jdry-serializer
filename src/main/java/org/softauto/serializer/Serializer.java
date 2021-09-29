@@ -1,4 +1,4 @@
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 import io.grpc.CallOptions;
 import io.grpc.ManagedChannel;
@@ -8,7 +8,8 @@ import io.grpc.stub.ClientCalls;
 import io.grpc.stub.StreamObserver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.softauto.grpc.service.SerializerService;
+import org.softauto.serializer.service.Message;
+import org.softauto.serializer.service.SerializerService;
 
 public class Serializer {
 
@@ -46,18 +47,21 @@ public class Serializer {
         return this;
     }
 
+    public Serializer buildChannel(){
+        channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+        return this;
+    }
 
-
-    public <T> T write(String descriptor, Object[] obj) throws Exception {
+    public <T> T write(Message message) throws Exception {
         Object result = null;
         try {
-            channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
-            logger.debug("channel create on host "+ host + " port " + port);
+            //channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+            //logger.debug("channel create on host "+ host + " port " + port);
             SerializerService client = SoftautoGrpcClient.create(channel, SerializerService.class);
-            result =  client.execute(descriptor, obj);
-            logger.debug("successfully execute "+ descriptor);
+            result =  client.execute(message);
+            logger.debug("successfully execute message "+ message.toJson());
         }catch (Exception e){
-            logger.error("fail execute sync "+ descriptor,e);
+            logger.error("fail execute sync message "+ message.toJson(),e);
         }finally {
             channel.shutdown();
         }
@@ -65,16 +69,16 @@ public class Serializer {
     }
 
 
-    public <T>void write(String descriptor, Object[] obj, CallFuture<T> callback) throws Exception {
+    public <T>void write(Message message,  CallFuture<T> callback) throws Exception {
         try {
-            channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
-            logger.debug("channel create on host "+ host + " port " + port);
+            //channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+            //logger.debug("channel create on host "+ host + " port " + port);
             SerializerService.Callback client = SoftautoGrpcClient.create(channel, SerializerService.Callback.class);
             MethodDescriptor<Object[], Object> m = ServiceDescriptor.create(SerializerService.class).getMethod("execute", MethodDescriptor.MethodType.UNARY);
             StreamObserver<Object> observerAdpater = new CallbackToResponseStreamObserverAdpater<>(callback, channel);
-            ClientCalls.asyncUnaryCall(channel.newCall(m, CallOptions.DEFAULT), new Object[]{descriptor,obj}, observerAdpater);
+            ClientCalls.asyncUnaryCall(channel.newCall(m, CallOptions.DEFAULT), new Object[]{message}, observerAdpater);
         }catch (Exception e){
-            logger.error("fail execute async "+ descriptor,e);
+            logger.error("fail execute async  message "+message.toJson(),e);
         }
     }
 }

@@ -1,4 +1,4 @@
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 import java.lang.reflect.Method;
 

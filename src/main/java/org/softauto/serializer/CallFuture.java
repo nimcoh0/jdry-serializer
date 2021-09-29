@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 import java.util.concurrent.*;
 
@@ -25,9 +25,11 @@ import java.util.concurrent.*;
  */
 public class CallFuture<T> implements Future<T>, Callback<T> {
   private final CountDownLatch latch = new CountDownLatch(1);
-  private final Callback<T> chainedCallback;
+  private  Callback<T> chainedCallback;
   private T result = null;
   private Throwable error = null;
+  private Object[] arguments = null;
+  private Class[] argumentsType = null;
 
   /**
    * Creates a CallFuture.
@@ -46,6 +48,8 @@ public class CallFuture<T> implements Future<T>, Callback<T> {
     this.chainedCallback = chainedCallback;
   }
 
+
+
   /**
    * Sets the RPC response, and unblocks all threads waiting on {@link #get()} or
    * {@link #get(long, TimeUnit)}.
@@ -59,7 +63,19 @@ public class CallFuture<T> implements Future<T>, Callback<T> {
     if (chainedCallback != null) {
       chainedCallback.handleResult(result);
     }
+
   }
+
+  public CallFuture handleArguments(Object[] arguments){
+    this.arguments = arguments;
+    return this;
+  }
+
+  public CallFuture handleArgumentsType(Class[] argumentsType){
+    this.argumentsType = argumentsType;
+    return this;
+  }
+
 
   /**
    * Sets an error thrown during RPC execution, and unblocks all threads waiting
@@ -74,6 +90,7 @@ public class CallFuture<T> implements Future<T>, Callback<T> {
     if (chainedCallback != null) {
       chainedCallback.handleError(error);
     }
+
   }
 
   /**

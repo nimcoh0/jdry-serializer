@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.softauto.grpc;
+package org.softauto.serializer;
 
 import com.google.common.io.ByteStreams;
 import io.grpc.MethodDescriptor;
@@ -31,7 +31,7 @@ import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.avro.util.Utf8;
-import org.softauto.grpc.kryo.KryoSerialization;
+import org.softauto.serializer.kryo.KryoSerialization;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
