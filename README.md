@@ -1,7 +1,7 @@
 ## Serialization
 
 jdry-serializer can serialize any type without the need to define special types. 
-it make use of [Avro-grpc](https://avro.apache.org/) & [kryo framwork](https://github.com/EsotericSoftware/kryo) for the Serialization .
+it make use of [Avro-grpc](https://avro.apache.org/) & [kryo framework](https://github.com/EsotericSoftware/kryo) for the Serialization .
 and support sync & async communication 
 
 > please see [kryo](https://github.com/EsotericSoftware/kryo) for adding  unsupported types
