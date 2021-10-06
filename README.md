@@ -18,7 +18,7 @@ and support sync & async communication
 the *serializer.write* method except Message Object  
 for example sending message with description "test" and a class as the data .
 
-    Serializer serializer = new Serializer().setHost("localhost").setPort(port); 
+    Serializer serializer = new Serializer().setHost("localhost").setPort(port).buildChannel(); 
     Message msg = Message.newBuilder().setDescriptor("test").setArgs(new Object[]{TestClass.class}).build(); 
     String result =  serializer.write(msg);
     
@@ -50,7 +50,7 @@ you should impl the service interface (SerializerService) method execute to do w
 the *serializer.write* method except two arguments ,Message and Callback 
 for example sending message with description "test" and a class as the data .
 
-    Serializer serializer = new Serializer().setHost("localhost").setPort(port); 
+    Serializer serializer = new Serializer().setHost("localhost").setPort(port).buildChannel(); 
     CallFuture<String> future = new CallFuture<>(); 
     Message msg = Message.newBuilder().setDescriptor("test").setArgs(new Object[]{TestClass.class}).build(); 
     serializer.write(msg,future);
