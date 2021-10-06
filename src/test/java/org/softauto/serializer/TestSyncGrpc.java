@@ -42,7 +42,7 @@ public class TestSyncGrpc {
 
     @Test
     public void testSync() throws Exception {
-        Serializer serializer = new Serializer().setHost("localhost").setPort(port);
+        Serializer serializer = new Serializer().setHost("localhost").setPort(port).buildChannel();
         Message msg = Message.newBuilder().setDescriptor("test").setArgs(new Object[]{TestClass.class}).build();
         String result =  serializer.write(msg);
         assertTrue(result.equals("ok"));

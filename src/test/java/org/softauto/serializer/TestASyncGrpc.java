@@ -48,7 +48,7 @@ public class TestASyncGrpc {
     @Test
     public void testAsync() throws Exception {
         lock = new CountDownLatch(1);
-        Serializer serializer = new Serializer().setHost("localhost").setPort(port);
+        Serializer serializer = new Serializer().setHost("localhost").setPort(port).buildChannel();
         CallFuture<String> future = new CallFuture<>();
         Message msg = Message.newBuilder().setDescriptor("test").setArgs(new Object[]{TestClass.class}).build();
         serializer.write(msg,future);
