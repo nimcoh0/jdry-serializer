@@ -16,10 +16,18 @@ public class Message {
     private String threadId;
     private String service;
     private Map<String , Object> data = new HashMap<>();
+    private String state;
+
+
+    public String getState() {
+        return state;
+    }
 
     public String getService() {
         return service;
     }
+
+
 
     public String getThreadId() {
         return threadId;
@@ -78,7 +86,16 @@ public class Message {
         private String threadId;
         private String service;
         private Map<String , Object> data = new HashMap<>();
+        private String state;
 
+        public String getState() {
+            return state;
+        }
+
+        public Builder setState(String state) {
+            this.state = state;
+            return this;
+        }
 
         public Builder setService(String service) {
             this.service = service;
@@ -129,6 +146,7 @@ public class Message {
             msg.message = message;
             msg.threadId = threadId;
             msg.service = service;
+            msg.state = state;
             return msg;
         }
     }
