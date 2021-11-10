@@ -27,11 +27,11 @@ public class TestSyncGrpc {
 
             }
         };
-        setup(SerializerService.class,impl);
+        setup(SerializerService.class,SerializerServiceImpl.class);
     }
 
 
-    private void setup(Class iface,SerializerServiceImpl impl)throws IOException {
+    private void setup(Class iface,Class impl)throws IOException {
         SoftautoGrpcServer.setSerializationEngine(KryoSerialization.getInstance());
         Server server = ServerBuilder.forPort(0)
                     .addService(SoftautoGrpcServer.createServiceDefinition(iface, impl))
@@ -42,7 +42,7 @@ public class TestSyncGrpc {
 
     @Test
     public void testSync() throws Exception {
-        Serializer serializer = new Serializer().setHost("localhost").setPort(port).buildChannel();
+        Serializer serializer = new Serializer().setHost("localhost").setPort(port).build();
         Message msg = Message.newBuilder().setDescriptor("test").setArgs(new Object[]{TestClass.class}).build();
         String result =  serializer.write(msg);
         assertTrue(result.equals("ok"));

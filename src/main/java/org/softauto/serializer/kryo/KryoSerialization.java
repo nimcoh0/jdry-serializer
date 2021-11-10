@@ -31,7 +31,7 @@ import java.util.GregorianCalendar;
 public class KryoSerialization implements ISerialization {
 
     public static Kryo kryo = null;
-
+    //private  final org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager.getLogger(KryoSerialization.class);
     private static KryoSerialization kryoSerialization;
 
     public static KryoSerialization getInstance(){

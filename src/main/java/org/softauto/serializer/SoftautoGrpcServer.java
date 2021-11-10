@@ -51,7 +51,7 @@ public abstract class SoftautoGrpcServer {
    *              is created.
    * @return a new server service definition.
    */
-  public static ServerServiceDefinition createServiceDefinition(Class iface,Object impl) {
+  public static ServerServiceDefinition createServiceDefinition(Class iface,Class impl) {
     Protocol protocol = SoftautoGrpcUtils.getProtocol(iface);
     ServiceDescriptor serviceDescriptor = (ServiceDescriptor) ServiceDescriptor.create(iface);
     ServerServiceDefinition.Builder serviceDefinitionBuilder = ServerServiceDefinition
@@ -90,17 +90,18 @@ public abstract class SoftautoGrpcServer {
   protected static class UnaryMethodHandler implements ServerCalls.UnaryMethod<Object[], Object> {
 
       private final Method method;
-      private Object serviceImpl;
+      private Class impl;
 
-      UnaryMethodHandler(Method method, Object impl) {
+      UnaryMethodHandler(Method method, Class impl) {
           this.method = method;
-          this.serviceImpl = impl;
+          this.impl = impl;
       }
 
       @Override
       public void invoke(Object[] request, StreamObserver<Object> responseObserver) {
           Object methodResponse = null;
           try {
+              Object serviceImpl = impl.newInstance();
               Method m = Utils.getMethod(serviceImpl, method.getName(), method.getParameterTypes());
               logger.debug("invoking " + method);
               m.setAccessible(true);
@@ -120,13 +121,13 @@ public abstract class SoftautoGrpcServer {
       private static class OneWayUnaryMethodHandler extends UnaryMethodHandler {
           private static final Logger LOG = Logger.getLogger(OneWayUnaryMethodHandler.class.getName());
           private Method method;
-          private Object serviceImpl;
+          private Class impl;
 
 
-          OneWayUnaryMethodHandler(Method method, Object impl) {
+          OneWayUnaryMethodHandler(Method method, Class impl) {
               super(method, impl);
               this.method = method;
-              this.serviceImpl = impl;
+              this.impl = impl;
           }
 
 
@@ -136,9 +137,18 @@ public abstract class SoftautoGrpcServer {
               responseObserver.onCompleted();
 
               try {
+                  Object serviceImpl = impl.newInstance();
                   Method m = Utils.getMethod(serviceImpl, method.getName(), method.getParameterTypes());
-                  logger.debug("invoking " + method);
+                  if(m == null){
+                      logger.error("method is null");
+                      throw new Exception("method is null");
+                  }
+                  logger.debug("invoking " + method + " with request "+ Utils.result2String(request));
                   m.setAccessible(true);
+                  if(request == null){
+                      logger.error("request is null");
+                      throw new Exception("request is null");
+                  }
                   m.invoke(serviceImpl, request);
               } catch (Exception e) {
                   logger.error("fail invoke method " + method, e);

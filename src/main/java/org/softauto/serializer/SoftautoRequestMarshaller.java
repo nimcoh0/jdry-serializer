@@ -70,7 +70,7 @@ public class SoftautoRequestMarshaller implements MethodDescriptor.Marshaller<Ob
   }
 
   @Override
-  public Object[] parse(InputStream stream) {
+  public synchronized Object[] parse(InputStream stream) {
     try {
       BinaryDecoder in = DECODER_FACTORY.binaryDecoder(stream, null);
       Schema reqSchema = message.getRequest();
@@ -80,10 +80,13 @@ public class SoftautoRequestMarshaller implements MethodDescriptor.Marshaller<Ob
       }
       reqSchema.setFields(fields);
       GenericRecord request = (GenericRecord) new SpecificDatumReader<>(reqSchema).read(null, in);
+      logger.debug("request: "+request.getSchema().toString());
       Object[] args = new Object[reqSchema.getFields().size()];
       int i = 0;
+      logger.debug("deserialize message with fields size "+reqSchema.getFields().size());
       for (Schema.Field field : reqSchema.getFields()) {
         Object obj = request.get(field.name());
+        logger.debug("deserialize "+field.name()+ " index "+ i);
         args[i++] = serializer.deserialize(((ByteBuffer) obj).array());
       }
       return args;
@@ -111,11 +114,17 @@ public class SoftautoRequestMarshaller implements MethodDescriptor.Marshaller<Ob
           this.args[i] = new Byte[1];
         }
       }
+      if(this.args.length == args.length ) {
+        logger.debug("RequestInputStream all args done successfully size " + this.args.length);
+      }else {
+        logger.error("RequestInputStream fail expected " + args.length + " found " + this.args.length);
+      }
       this.message = message;
     }
 
     @Override
-    public int drainTo(OutputStream target) throws IOException {
+    public synchronized int drainTo(OutputStream target) throws IOException {
+      logger.debug("start package build ");
       int written;
       if (getPartial() != null) {
         written = (int) ByteStreams.copy(getPartial(), target);
@@ -127,10 +136,14 @@ public class SoftautoRequestMarshaller implements MethodDescriptor.Marshaller<Ob
         for (Schema.Field param : reqSchema.getFields()) {
             new SpecificDatumWriter<>(Schema.create(Schema.Type.BYTES)).write(this.args[i++], out);
         }
+        if(reqSchema.getFields().size() != this.args.length){
+          logger.error("param size not the same as args ");
+        }
         out.flush();
         args = null;
         written = outputStream.getWrittenCount();
       }
+      logger.debug("package build successfully");
       return written;
     }
   }

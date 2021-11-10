@@ -1,6 +1,9 @@
 package org.softauto.serializer;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class Utils {
 
@@ -27,7 +30,21 @@ public class Utils {
         return descriptor.substring(descriptor.lastIndexOf("_")+1,descriptor.length());
     }
 
+    public static String result2String(Object result){
+        try{
 
+            if(result != null){
+                if(result instanceof List){
+                    return ToStringBuilder.reflectionToString(((List)result).toArray(), new MultipleRecursiveToStringStyle());
+                }else {
+                    return ToStringBuilder.reflectionToString(result, new MultipleRecursiveToStringStyle());
+                }
+            }
+        }catch(Exception e){
+            logger.warn("result to String fail on  ",e.getMessage());
+        }
+        return "";
+    }
 
 
 

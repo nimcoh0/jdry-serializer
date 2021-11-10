@@ -63,7 +63,7 @@ public class SoftautoResponseMarshaller implements MethodDescriptor.Marshaller<O
   }
 
   @Override
-  public Object parse(InputStream stream) {
+  public synchronized Object parse(InputStream stream) {
     try {
       if (message.isOneWay())
         return null;
@@ -96,7 +96,7 @@ public class SoftautoResponseMarshaller implements MethodDescriptor.Marshaller<O
     }
 
     @Override
-    public int drainTo(OutputStream target) throws IOException {
+    public synchronized int drainTo(OutputStream target) throws IOException {
       int written;
       if (getPartial() != null) {
         written = (int) ByteStreams.copy(getPartial(), target);

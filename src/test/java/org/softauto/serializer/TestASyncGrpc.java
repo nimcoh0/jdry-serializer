@@ -31,14 +31,14 @@ public class TestASyncGrpc {
 
             }
         };
-        setup(SerializerService.class,impl);
+        setup(SerializerService.class,SerializerServiceImpl.class);
     }
 
 
-    private void setup(Class iface,SerializerServiceImpl impl)throws IOException {
+    private void setup(Class iface,Class impl)throws IOException {
         SoftautoGrpcServer.setSerializationEngine(KryoSerialization.getInstance());
         Server server = ServerBuilder.forPort(0)
-                    .addService(SoftautoGrpcServer.createServiceDefinition(iface, impl))
+                    .addService(SoftautoGrpcServer.createServiceDefinition(iface, impl.getClass()))
                     .build();
         server.start();
         port = server.getPort();
@@ -48,7 +48,7 @@ public class TestASyncGrpc {
     @Test
     public void testAsync() throws Exception {
         lock = new CountDownLatch(1);
-        Serializer serializer = new Serializer().setHost("localhost").setPort(port).buildChannel();
+        Serializer serializer = new Serializer().setHost("localhost").setPort(port).build();
         CallFuture<String> future = new CallFuture<>();
         Message msg = Message.newBuilder().setDescriptor("test").setArgs(new Object[]{TestClass.class}).build();
         serializer.write(msg,future);
