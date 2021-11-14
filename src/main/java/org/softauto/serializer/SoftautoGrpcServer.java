@@ -103,7 +103,7 @@ public abstract class SoftautoGrpcServer {
           try {
               Object serviceImpl = impl.newInstance();
               Method m = Utils.getMethod(serviceImpl, method.getName(), method.getParameterTypes());
-              logger.debug("invoking " + method);
+              logger.debug("invoking " + method.getName()+ " request "+ Utils.result2String(request));
               m.setAccessible(true);
               methodResponse = m.invoke(serviceImpl, request);
           } catch (InvocationTargetException e) {

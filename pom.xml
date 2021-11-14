@@ -6,22 +6,17 @@
 
     <groupId>org.softauto</groupId>
     <artifactId>jdry-serializer</artifactId>
-    <version>beta-1.0</version>
+    <version>1.0.0</version>
 
 
     <dependencies>
         <dependency>
             <groupId>org.softauto</groupId>
             <artifactId>jdry-avro</artifactId>
-            <version>beta-1.0</version>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.softauto</groupId>
-            <artifactId>jdry-avro</artifactId>
-            <version>beta-1.0</version>
-            <scope>compile</scope>
-        </dependency>
+
         <dependency>
             <groupId>de.javakaffee</groupId>
             <artifactId>kryo-serializers</artifactId>

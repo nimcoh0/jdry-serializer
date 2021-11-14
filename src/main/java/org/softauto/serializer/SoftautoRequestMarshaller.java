@@ -80,13 +80,10 @@ public class SoftautoRequestMarshaller implements MethodDescriptor.Marshaller<Ob
       }
       reqSchema.setFields(fields);
       GenericRecord request = (GenericRecord) new SpecificDatumReader<>(reqSchema).read(null, in);
-      logger.debug("request: "+request.getSchema().toString());
       Object[] args = new Object[reqSchema.getFields().size()];
       int i = 0;
-      logger.debug("deserialize message with fields size "+reqSchema.getFields().size());
       for (Schema.Field field : reqSchema.getFields()) {
         Object obj = request.get(field.name());
-        logger.debug("deserialize "+field.name()+ " index "+ i);
         args[i++] = serializer.deserialize(((ByteBuffer) obj).array());
       }
       return args;
@@ -114,9 +111,7 @@ public class SoftautoRequestMarshaller implements MethodDescriptor.Marshaller<Ob
           this.args[i] = new Byte[1];
         }
       }
-      if(this.args.length == args.length ) {
-        logger.debug("RequestInputStream all args done successfully size " + this.args.length);
-      }else {
+      if(this.args.length != args.length ) {
         logger.error("RequestInputStream fail expected " + args.length + " found " + this.args.length);
       }
       this.message = message;
@@ -124,7 +119,6 @@ public class SoftautoRequestMarshaller implements MethodDescriptor.Marshaller<Ob
 
     @Override
     public synchronized int drainTo(OutputStream target) throws IOException {
-      logger.debug("start package build ");
       int written;
       if (getPartial() != null) {
         written = (int) ByteStreams.copy(getPartial(), target);
@@ -143,8 +137,7 @@ public class SoftautoRequestMarshaller implements MethodDescriptor.Marshaller<Ob
         args = null;
         written = outputStream.getWrittenCount();
       }
-      logger.debug("package build successfully");
-      return written;
+        return written;
     }
   }
 }

@@ -51,6 +51,7 @@ public class Serializer {
     public Serializer build(){
         channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
         client = SoftautoGrpcClient.create(channel, SerializerService.class);
+        logger.debug("channel build using host "+ host + " and port "+ port);
         return this;
     }
 
@@ -70,10 +71,11 @@ public class Serializer {
 
     public <T>void write(Message message,  CallFuture<T> callback) throws Exception {
         try {
-            //SerializerService.Callback client = SoftautoGrpcClient.create(channel, SerializerService.Callback.class);
+
             MethodDescriptor<Object[], Object> m = ServiceDescriptor.create(SerializerService.class).getMethod("execute", MethodDescriptor.MethodType.UNARY);
             StreamObserver<Object> observerAdpater = new CallbackToResponseStreamObserverAdpater<>(callback, channel);
             ClientCalls.asyncUnaryCall(channel.newCall(m, CallOptions.DEFAULT), new Object[]{message}, observerAdpater);
+            logger.debug("successfully execute message "+ message.toJson());
         }catch (Exception e){
             logger.error("fail execute async  message "+message.toJson(),e);
         }

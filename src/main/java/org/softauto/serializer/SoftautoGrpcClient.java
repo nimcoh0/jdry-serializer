@@ -100,15 +100,15 @@ public abstract class SoftautoGrpcClient {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
       try {
-        logger.debug("invoke method " + method );
+        logger.debug("invoke method " + method.getName() + " with args " + Utils.result2String(args) );
         return invokeUnaryMethod(method, args);
 
       } catch (RuntimeException re) {
-        logger.error("fail invoke method "+ method ,re);
+        logger.error("fail invoke method "+ method.getName() ,re);
         // rethrow any runtime exception
         throw re;
       } catch (Exception e) {
-        logger.error("fail invoke method "+ method ,e);
+        logger.error("fail invoke method "+ method.getName() ,e);
         throw new AvroRemoteException(e);
       }
     }
