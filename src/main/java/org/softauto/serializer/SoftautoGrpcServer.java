@@ -98,7 +98,7 @@ public abstract class SoftautoGrpcServer {
       }
 
       @Override
-      public void invoke(Object[] request, StreamObserver<Object> responseObserver) {
+      public synchronized void invoke(Object[] request, StreamObserver<Object> responseObserver) {
           Object methodResponse = null;
           try {
               Object serviceImpl = impl.newInstance();
@@ -132,7 +132,7 @@ public abstract class SoftautoGrpcServer {
 
 
           @Override
-          public void invoke(Object[] request, StreamObserver<Object> responseObserver) {
+          public synchronized void invoke(Object[] request, StreamObserver<Object> responseObserver) {
               responseObserver.onNext(null);
               responseObserver.onCompleted();
 
