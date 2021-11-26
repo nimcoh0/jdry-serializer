@@ -66,6 +66,7 @@ public class Serializer {
         }finally {
             channel.shutdown();
         }
+        logger.debug("result "+(T)result);
         return (T)result;
     }
 
@@ -77,6 +78,7 @@ public class Serializer {
                 StreamObserver<Object> observerAdpater = new CallbackToResponseStreamObserverAdpater<>(callback, channel);
                 ClientCalls.asyncUnaryCall(channel.newCall(m, CallOptions.DEFAULT), new Object[]{message}, observerAdpater);
                 logger.debug("successfully execute message " + message.toJson());
+                logger.debug("callback value "+callback.getResult()+" get error "+callback.getError());
             }
         }catch (Exception e){
             logger.error("fail execute async  message "+message.toJson(),e);

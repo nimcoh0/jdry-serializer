@@ -177,6 +177,11 @@ public abstract class SoftautoGrpcClient {
 
       @Override
       public void onError(Throwable t) {
+        if(t.getMessage().contains("UNAVAILABLE")){
+          callback.handleResult(null);
+          logger.warn("got communication UNAVAILABLE . test may end");
+          return;
+        }
         callback.handleError(new AvroRuntimeException(t));
       }
 
