@@ -137,6 +137,7 @@ public abstract class SoftautoGrpcClient {
     }
 
     private Object unaryRequest(String methodName, Object[] args) throws Exception {
+      logger.debug("invoke async method "+methodName);
       CallFuture<Object> callFuture = new CallFuture<>();
       unaryRequest(methodName, args, callFuture);
       try {
@@ -150,7 +151,6 @@ public abstract class SoftautoGrpcClient {
     }
 
     private <RespT> void unaryRequest(String methodName, Object[] args, Callback<RespT> callback) throws Exception {
-      logger.debug("invoke async method "+methodName);
       StreamObserver<Object> observerAdpater = new CallbackToResponseStreamObserverAdpater<>(callback);
       ClientCalls.asyncUnaryCall(
           channel.newCall(serviceDescriptor.getMethod(methodName, MethodDescriptor.MethodType.UNARY), callOptions),
