@@ -14,7 +14,6 @@ import de.javakaffee.kryoserializers.jodatime.JodaLocalTimeSerializer;
 import org.joda.time.DateTime;
 import org.objenesis.strategy.StdInstantiatorStrategy;
 import org.softauto.serializer.ISerialization;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationHandler;
@@ -25,12 +24,13 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 
 
+
 /**
  * wrapper to Kryo Serialization
  */
 public class KryoSerialization implements ISerialization {
 
-    public static Kryo kryo = null;
+    public  Kryo kryo = null;
     //private  final org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager.getLogger(KryoSerialization.class);
     private static KryoSerialization kryoSerialization;
 
@@ -53,7 +53,9 @@ public class KryoSerialization implements ISerialization {
         addSerializers();
     }
 
-
+    public Kryo getKryo(){
+        return kryo;
+    }
 
 
     public synchronized byte[] serialize(Object obj) throws Exception{
