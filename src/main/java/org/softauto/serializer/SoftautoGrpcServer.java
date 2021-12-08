@@ -28,6 +28,7 @@ import org.softauto.serializer.kryo.KryoSerialization;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,9 +104,19 @@ public abstract class SoftautoGrpcServer {
           try {
               Object serviceImpl = impl.newInstance();
               Method m = Utils.getMethod(serviceImpl, method.getName(), method.getParameterTypes());
+              if(m == null){
+                  logger.error("method is null");
+                  throw new Exception("method is null");
+              }
               logger.debug("invoking " + method.getName()+ " request "+ Utils.result2String(request));
               m.setAccessible(true);
+              if(request == null){
+                  logger.error("request is null");
+                  throw new Exception("request is null");
+              }
               methodResponse = m.invoke(serviceImpl, request);
+              logger.debug("successfully invoke "+ Arrays.toString(request) + " on "+serviceImpl.getClass().getName() );
+              logger.debug("got result :"+ methodResponse);
           } catch (InvocationTargetException e) {
               logger.error("fail invoke method " + method, e);
               methodResponse = e.getTargetException();
