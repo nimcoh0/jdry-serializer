@@ -1,21 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.softauto.serializer;
 
 
@@ -52,7 +34,7 @@ public abstract class SoftautoGrpcServer {
    *              is created.
    * @return a new server service definition.
    */
-  public static ServerServiceDefinition createServiceDefinition(Class iface,Class impl) {
+  public static ServerServiceDefinition createServiceDefinition(Class iface,Object impl) {
     Protocol protocol = SoftautoGrpcUtils.getProtocol(iface);
     ServiceDescriptor serviceDescriptor = (ServiceDescriptor) ServiceDescriptor.create(iface);
     ServerServiceDefinition.Builder serviceDefinitionBuilder = ServerServiceDefinition
@@ -91,9 +73,9 @@ public abstract class SoftautoGrpcServer {
   protected static class UnaryMethodHandler implements ServerCalls.UnaryMethod<Object[], Object> {
 
       private final Method method;
-      private Class impl;
+      private Object impl;
 
-      UnaryMethodHandler(Method method, Class impl) {
+      UnaryMethodHandler(Method method, Object impl) {
           this.method = method;
           this.impl = impl;
       }
@@ -102,8 +84,8 @@ public abstract class SoftautoGrpcServer {
       public synchronized void invoke(Object[] request, StreamObserver<Object> responseObserver) {
           Object methodResponse = null;
           try {
-              Object serviceImpl = impl.newInstance();
-              Method m = Utils.getMethod(serviceImpl, method.getName(), method.getParameterTypes());
+              //Object serviceImpl = impl.newInstance();
+              Method m = Utils.getMethod(impl, method.getName(), method.getParameterTypes());
               if(m == null){
                   logger.error("method is null");
                   throw new Exception("method is null");
@@ -114,8 +96,8 @@ public abstract class SoftautoGrpcServer {
                   logger.error("request is null");
                   throw new Exception("request is null");
               }
-              methodResponse = m.invoke(serviceImpl, request);
-              logger.debug("successfully invoke "+ Arrays.toString(request) + " on "+serviceImpl.getClass().getName() );
+              methodResponse = m.invoke(impl, request);
+              logger.debug("successfully invoke "+ Arrays.toString(request) + " on "+impl.getClass().getName() );
               logger.debug("got result :"+ methodResponse);
           } catch (InvocationTargetException e) {
               logger.error("fail invoke method " + method, e);
@@ -132,10 +114,10 @@ public abstract class SoftautoGrpcServer {
       private static class OneWayUnaryMethodHandler extends UnaryMethodHandler {
           private static final Logger LOG = Logger.getLogger(OneWayUnaryMethodHandler.class.getName());
           private Method method;
-          private Class impl;
+          private Object impl;
 
 
-          OneWayUnaryMethodHandler(Method method, Class impl) {
+          OneWayUnaryMethodHandler(Method method, Object impl) {
               super(method, impl);
               this.method = method;
               this.impl = impl;
@@ -148,8 +130,8 @@ public abstract class SoftautoGrpcServer {
               responseObserver.onCompleted();
 
               try {
-                  Object serviceImpl = impl.newInstance();
-                  Method m = Utils.getMethod(serviceImpl, method.getName(), method.getParameterTypes());
+                  //Object serviceImpl = impl.newInstance();
+                  Method m = Utils.getMethod(impl, method.getName(), method.getParameterTypes());
                   if(m == null){
                       logger.error("method is null");
                       throw new Exception("method is null");
@@ -160,7 +142,7 @@ public abstract class SoftautoGrpcServer {
                       logger.error("request is null");
                       throw new Exception("request is null");
                   }
-                  m.invoke(serviceImpl, request);
+                  m.invoke(impl, request);
               } catch (Exception e) {
                   logger.error("fail invoke method " + method, e);
                   Throwable cause = e;

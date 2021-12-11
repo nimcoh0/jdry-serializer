@@ -31,7 +31,6 @@ import java.util.GregorianCalendar;
 public class KryoSerialization implements ISerialization {
 
     public  Kryo kryo = null;
-    //private  final org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager.getLogger(KryoSerialization.class);
     private static KryoSerialization kryoSerialization;
 
     public static KryoSerialization getInstance(){
@@ -45,10 +44,6 @@ public class KryoSerialization implements ISerialization {
         kryo = new Kryo();
         kryo.setRegistrationRequired(false);
         kryo.setReferences(false);
-        //CompatibleFieldSerializer.CompatibleFieldSerializerConfig config = new CompatibleFieldSerializer.CompatibleFieldSerializerConfig();
-        //config.setChunkedEncoding(true);
-        //config.setReadUnknownFieldData(true);
-        //kryo.setDefaultSerializer(new SerializerFactory.CompatibleFieldSerializerFactory(config));
         kryo.setInstantiatorStrategy(new DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
         addSerializers();
     }
@@ -62,11 +57,9 @@ public class KryoSerialization implements ISerialization {
         Output output = null;
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream(4096);
-            //output = new Output(new ObjectOutputStream(outputStream));
             output = new Output(outputStream);
             serialize(obj, output);
             byte[] data =  output.toBytes();
-            //byte[] data =  outputStream.toByteArray();
             return data;
 
         }finally {
@@ -159,33 +152,10 @@ public class KryoSerialization implements ISerialization {
         kryo.register( InvocationHandler.class, new JdkProxySerializer() );
         UnmodifiableCollectionsSerializer.registerSerializers( kryo );
         SynchronizedCollectionsSerializer.registerSerializers( kryo );
-
-// custom serializers for non-jdk libs
-
-// register CGLibProxySerializer, works in combination with the appropriate action in handleUnregisteredClass (see below)
-        //kryo.register( CGLibProxySerializer.CGLibProxyMarker.class, new CGLibProxySerializer(  ) );
-// dexx
-        //ListSerializer.registerSerializers( kryo );
-        //MapSerializer.registerSerializers( kryo );
-        //SetSerializer.registerSerializers( kryo );
-// joda DateTime, LocalDate, LocalDateTime and LocalTime
         kryo.register( DateTime.class, new JodaDateTimeSerializer() );
         kryo.register( LocalDate.class, new JodaLocalDateSerializer() );
         kryo.register( LocalDateTime.class, new JodaLocalDateTimeSerializer() );
         kryo.register( LocalDateTime.class, new JodaLocalTimeSerializer() );
-// protobuf
-        //kryo.register( SampleProtoA.class, new ProtobufSerializer() ); // or override Kryo.getDefaultSerializer as shown below
-// wicket
-        //kryo.register( MiniMap.class, new MiniMapSerializer() );
-// guava ImmutableList, ImmutableSet, ImmutableMap, ImmutableMultimap, ImmutableTable, ReverseList, UnmodifiableNavigableSet
-        //ImmutableListSerializer.registerSerializers( kryo );
-        //ImmutableSetSerializer.registerSerializers( kryo );
-        //ImmutableMapSerializer.registerSerializers( kryo );
-        //ImmutableMultimapSerializer.registerSerializers( kryo );
-        //ImmutableTableSerializer.registerSerializers( kryo );
-        //ReverseListSerializer.registerSerializers( kryo );
-        //UnmodifiableNavigableSetSerializer.registerSerializers( kryo );
-// guava ArrayListMultimap, HashMultimap, LinkedHashMultimap, LinkedListMultimap, TreeMultimap, ArrayTable, HashBasedTable, TreeBasedTable
         ArrayListMultimapSerializer.registerSerializers( kryo );
         HashMultimapSerializer.registerSerializers( kryo );
         LinkedHashMultimapSerializer.registerSerializers( kryo );

@@ -31,14 +31,14 @@ public class TestASyncGrpc {
 
             }
         };
-        setup(SerializerService.class,SerializerServiceImpl.class);
+        setup(SerializerService.class,impl);
     }
 
 
-    private void setup(Class iface,Class impl)throws IOException {
+    private void setup(Class iface,Object impl)throws IOException {
         SoftautoGrpcServer.setSerializationEngine(KryoSerialization.getInstance());
         Server server = ServerBuilder.forPort(0)
-                    .addService(SoftautoGrpcServer.createServiceDefinition(iface, impl.getClass()))
+                    .addService(SoftautoGrpcServer.createServiceDefinition(iface, impl))
                     .build();
         server.start();
         port = server.getPort();

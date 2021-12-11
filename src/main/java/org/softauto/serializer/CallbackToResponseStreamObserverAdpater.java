@@ -40,7 +40,6 @@ public class CallbackToResponseStreamObserverAdpater<T> implements StreamObserve
     public void onCompleted() {
         if(channel != null)
          channel.shutdown();
-       // this.callback.handleResult((T)new Object());
 
     }
 
