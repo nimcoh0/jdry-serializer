@@ -17,6 +17,7 @@ public class Message {
     private String service;
     private Map<String , Object> data = new HashMap<>();
     private String state;
+    private MessageType messageType ;
 
 
     public String getState() {
@@ -27,7 +28,9 @@ public class Message {
         return service;
     }
 
-
+    public MessageType getMessageType() {
+        return messageType;
+    }
 
     public String getThreadId() {
         return threadId;
@@ -87,9 +90,15 @@ public class Message {
         private String service;
         private Map<String , Object> data = new HashMap<>();
         private String state;
+        private MessageType messageType = MessageType.METHOD;
 
         public String getState() {
             return state;
+        }
+
+        public Builder setType(MessageType messageType) {
+            this.messageType = messageType;
+            return this;
         }
 
         public Builder setState(String state) {
@@ -147,6 +156,7 @@ public class Message {
             msg.threadId = threadId;
             msg.service = service;
             msg.state = state;
+            msg.messageType = messageType;
             return msg;
         }
     }

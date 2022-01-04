@@ -4,7 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.util.DefaultInstantiatorStrategy;
-import com.sun.xml.internal.ws.encoding.soap.SerializationException;
+//import com.sun.xml.internal.ws.encoding.soap.SerializationException;
 import de.javakaffee.kryoserializers.*;
 import de.javakaffee.kryoserializers.guava.*;
 import de.javakaffee.kryoserializers.jodatime.JodaDateTimeSerializer;
@@ -56,8 +56,10 @@ public class KryoSerialization implements ISerialization {
     public synchronized byte[] serialize(Object obj) throws Exception{
         Output output = null;
         try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(4096);
-            output = new Output(outputStream);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream(1024);
+            //output = new Output(outputStream,4096);
+            output = new Output(1024, -1);
+            //output.writeString(obj.toString());
             serialize(obj, output);
             byte[] data =  output.toBytes();
             return data;
@@ -89,7 +91,7 @@ public class KryoSerialization implements ISerialization {
                 throw new IllegalArgumentException("The byte[] must not be null");
             }
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(objectData);
-            input = new Input(byteArrayInputStream, (int) objectData.length);
+            input = new Input(byteArrayInputStream);
             Object object = deserialize(input);
             return (T) object;
         } finally {
@@ -116,7 +118,7 @@ public class KryoSerialization implements ISerialization {
         }
     }
 
-    protected synchronized <T> T deserialize(Input  inputStream) {
+    protected synchronized <T> T deserialize(Input  inputStream) throws Exception {
         if (inputStream == null) {
             throw new IllegalArgumentException("The InputStream must not be null");
         }
@@ -124,11 +126,11 @@ public class KryoSerialization implements ISerialization {
             return (T)kryo.readClassAndObject(inputStream);
 
         } catch (Exception ex) {
-            throw new SerializationException(ex);
+            throw new Exception(ex);
         }
         }
 
-    protected synchronized <T> T deserialize(Input  inputStream,Class<T> type) {
+    protected synchronized <T> T deserialize(Input  inputStream,Class<T> type) throws Exception {
         if (inputStream == null) {
             throw new IllegalArgumentException("The InputStream must not be null");
         }
@@ -136,7 +138,7 @@ public class KryoSerialization implements ISerialization {
             return (T)kryo.readObject(inputStream,type);
 
         } catch (Exception ex) {
-            throw new SerializationException(ex);
+            throw new Exception(ex);
         }
     }
 
