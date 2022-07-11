@@ -11,9 +11,13 @@ import de.javakaffee.kryoserializers.jodatime.JodaDateTimeSerializer;
 import de.javakaffee.kryoserializers.jodatime.JodaLocalDateSerializer;
 import de.javakaffee.kryoserializers.jodatime.JodaLocalDateTimeSerializer;
 import de.javakaffee.kryoserializers.jodatime.JodaLocalTimeSerializer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.objenesis.strategy.StdInstantiatorStrategy;
 import org.softauto.serializer.ISerialization;
+import org.softauto.serializer.Serializer;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationHandler;
@@ -29,6 +33,7 @@ import java.util.GregorianCalendar;
  * wrapper to Kryo Serialization
  */
 public class KryoSerialization implements ISerialization {
+
 
     public  Kryo kryo = null;
     private static KryoSerialization kryoSerialization;
@@ -86,36 +91,44 @@ public class KryoSerialization implements ISerialization {
 
     public synchronized <T> T deserialize(final byte[] objectData) throws Exception{
         Input input = null;
+        Object object = null ;
         try {
             if (objectData == null) {
                 throw new IllegalArgumentException("The byte[] must not be null");
             }
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(objectData);
             input = new Input(byteArrayInputStream);
-            Object object = deserialize(input);
-            return (T) object;
+            object = deserialize(input);
+            //return (T) object;
+        }catch (Throwable e){
+            throw new Exception("fail deserialize ",e);
         } finally {
             if (input != null) {
                 input.close();
             }
         }
+        return (T) object;
     }
 
 
     public synchronized <T> T deserialize(byte[] objectData, Class<T> type) throws Exception {
         Input input = null;
+        Object object = null ;
         try {
             if (objectData == null) {
                 throw new IllegalArgumentException("The byte[] must not be null");
             }
             input = new Input(objectData);
-            Object object = deserialize(input,type);
-            return (T) object;
+            object = deserialize(input, type);
+            //return (T) object;
+        }catch (Throwable e){
+            throw new Exception("fail deserialize ",e);
         } finally {
             if (input != null) {
                 input.close();
             }
         }
+        return (T) object;
     }
 
     protected synchronized <T> T deserialize(Input  inputStream) throws Exception {
@@ -125,7 +138,7 @@ public class KryoSerialization implements ISerialization {
         try{
             return (T)kryo.readClassAndObject(inputStream);
 
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             throw new Exception(ex);
         }
         }
@@ -137,7 +150,7 @@ public class KryoSerialization implements ISerialization {
         try{
             return (T)kryo.readObject(inputStream,type);
 
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             throw new Exception(ex);
         }
     }

@@ -38,6 +38,10 @@ public class CallFuture<T> implements Future<T>, Callback<T> {
     this(null);
   }
 
+  public CountDownLatch getLatch(){
+    return latch;
+  }
+
   /**
    * Creates a CallFuture with a chained Callback which will be invoked when this
    * CallFuture's Callback methods are invoked.
@@ -170,6 +174,8 @@ public class CallFuture<T> implements Future<T>, Callback<T> {
       throw new TimeoutException();
     }
   }
+
+
 
   @Override
   public boolean isDone() {
