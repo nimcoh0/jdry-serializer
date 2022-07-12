@@ -4,6 +4,8 @@ public enum MessageType {
 
     METHOD,
     VARIABLE,
+    LISTENER,
+    lISTENER_MOCK,
     NONE;
 
     public static MessageType fromString(String text) {
